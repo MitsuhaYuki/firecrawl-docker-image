@@ -35,7 +35,7 @@ jobs:
           path: ./apps/api/*.tar
           retention-days: 7
 
-      - name: Upload image to release / WARNING: this is always failed with no reason, temporary disabled.
+      - name: Upload image to release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.event.inputs.git_tag }}
