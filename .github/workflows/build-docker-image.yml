@@ -47,5 +47,5 @@ jobs:
           tag_name: ${{ github.event.inputs.git_tag }}
           name: ${{ github.event.inputs.git_tag }}
           files: |
-            ./apps/api/*.tar
+            ./apps/*.tar
           fail_on_unmatched_files: true
