@@ -32,14 +32,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: docker-image-${{ github.event.inputs.git_tag }}
-          path: image.tar
+          path: ./apps/api/*.tar
           retention-days: 7
 
-      # - name: Upload image to release / WARNING: this is always failed with no reason, temporary disabled.
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     tag_name: ${{ github.event.inputs.git_tag }}
-      #     name: ${{ github.event.inputs.git_tag }}
-      #     files: |
-      #       image.tar
-      #     fail_on_unmatched_files: true
+      - name: Upload image to release / WARNING: this is always failed with no reason, temporary disabled.
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.git_tag }}
+          name: ${{ github.event.inputs.git_tag }}
+          files: |
+            ./apps/api/*.tar
+          fail_on_unmatched_files: true
