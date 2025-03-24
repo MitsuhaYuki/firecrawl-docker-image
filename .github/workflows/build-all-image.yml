@@ -1,4 +1,4 @@
-name: Build firecrawl docker image
+name: Build all image
 on:
   workflow_dispatch:
     inputs:
@@ -34,18 +34,22 @@ jobs:
       - name: List current files
         run: chmod 0777 api-image.tar | chmod 0777 playwright-image.tar | ls -la
 
+      - uses: montudor/action-zip@v1.0.0
+        with:
+          args: zip docker-images.zip ./apps/*.tar
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: docker-image-${{ github.event.inputs.git_tag }}
-          path: ./apps/*.tar
+          path: ./apps/*.zip
           retention-days: 7
 
-      # - name: Upload image to release
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     tag_name: ${{ github.event.inputs.git_tag }}
-      #     name: ${{ github.event.inputs.git_tag }}
-      #     files: |
-      #       ./apps/*.tar
-      #     fail_on_unmatched_files: true
+      - name: Upload image to release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.git_tag }}
+          name: ${{ github.event.inputs.git_tag }}
+          files: |
+            ./apps/*.zip
+          fail_on_unmatched_files: true
