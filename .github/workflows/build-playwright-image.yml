@@ -1,4 +1,4 @@
-name: Build api image
+name: Build playwright-service image
 on:
   workflow_dispatch:
     inputs:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: './apps/api'
+        working-directory: './apps/playwright-service-ts'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,7 +32,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: docker-image-${{ github.event.inputs.git_tag }}
-          path: ./apps/api/*.tar
+          path: ./apps/playwright-service-ts/*.tar
           retention-days: 7
 
       - name: Upload image to release
@@ -41,5 +41,5 @@ jobs:
           tag_name: ${{ github.event.inputs.git_tag }}
           name: ${{ github.event.inputs.git_tag }}
           files: |
-            ./apps/api/*.tar
+            ./apps/playwright-service-ts/*.tar
           fail_on_unmatched_files: true
