@@ -36,9 +36,10 @@ jobs:
       #     retention-days: 7
 
       - name: Upload image to release
-        uses: softprops/action-gh-release@v0.1.13
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.event.inputs.git_tag }}
           name: ${{ github.event.inputs.git_tag }}
-          files: image.tar
+          files: |
+            image.tar
           fail_on_unmatched_files: true
