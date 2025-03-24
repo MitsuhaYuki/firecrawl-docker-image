@@ -21,9 +21,17 @@ jobs:
           ref: ${{ github.event.inputs.git_tag }}
 
       - name: Build
-        run: docker build . --tag api:${{ github.event.inputs.git_tag }}
+        run: docker build . --tag app:${{ github.event.inputs.git_tag }}
 
       - name: Save image to local file
-        run: docker save -o image.tar api:${{ github.event.inputs.git_tag }}
+        run: docker save -o image.tar app:${{ github.event.inputs.git_tag }}
 
-      
+      - name: Upload image to release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.git_tag }}
+          name: ${{ github.event.inputs.git_tag }}
+          files: image.tar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
