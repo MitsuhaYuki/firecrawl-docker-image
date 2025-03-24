@@ -26,7 +26,7 @@ jobs:
         run: docker save -o image.tar app:${{ github.event.inputs.git_tag }}
 
       - name: DEBUG-List current files
-        run: ls -la
+        run: chmod 0777 image.tar | ls -la
 
       - name: Upload image to release
         uses: softprops/action-gh-release@v2.2.1
@@ -34,3 +34,4 @@ jobs:
           tag_name: ${{ github.event.inputs.git_tag }}
           name: ${{ github.event.inputs.git_tag }}
           files: image.tar
+          fail_on_unmatched_files: true
