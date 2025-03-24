@@ -46,7 +46,7 @@ jobs:
         with:
           name: docker-image-${{ github.event.inputs.git_tag }}
           path: ./apps/*.zip
-          retention-days: 7
+          retention-days: 1
 
       - name: Upload image to release
         uses: softprops/action-gh-release@v1
