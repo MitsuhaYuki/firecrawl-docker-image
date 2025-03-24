@@ -1,0 +1,29 @@
+name: Docker Image CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      git_tag:
+        description: 'Existing Git tag to build from'
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: './app/api'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.git_tag }}
+
+      - name: Build
+        run: docker build . --file Dockerfile --tag api:${{ github.event.inputs.git_tag }}
+
+      - name: Save image to local file
+        run: docker save -o image.tar api:${{ github.event.inputs.git_tag }}
+
+      
