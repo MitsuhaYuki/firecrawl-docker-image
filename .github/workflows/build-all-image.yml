@@ -34,9 +34,12 @@ jobs:
       - name: List current files
         run: chmod 0777 api-image.tar | chmod 0777 playwright-image.tar | ls -la
 
-      - uses: montudor/action-zip@v1.0.0
-        with:
-          args: zip docker-images.zip ./apps/*.tar
+      - name: Install zip
+        uses: montudor/action-zip@v1
+      
+      - name: Zip image files
+        run: zip -9 -j docker-images.zip *.tar
+        working-directory: ./apps
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
