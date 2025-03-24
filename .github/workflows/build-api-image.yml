@@ -1,0 +1,54 @@
+name: Versioned Docker Build and Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      git_tag:
+        description: 'Existing Git tag to build from'
+        required: true
+        type: string
+      release_title:
+        description: 'Display title for the release'
+        required: true
+        type: string
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout specific tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.git_tag }}
+          fetch-depth: 0
+
+      - name: Validate tag existence
+        run: |
+          git fetch --tags
+          if ! git rev-parse ${{ github.event.inputs.git_tag }} >/dev/null 2>&1; then
+            echo "::error::Tag ${{ github.event.inputs.git_tag }} does not exist!"
+            exit 1
+          fi
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/api
+          file: ./apps/api/Dockerfile
+          tags: |
+            app:${{ github.event.inputs.git_tag }}
+          load: true
+          push: false
+
+      - name: Save image as tarball
+        run: |
+          docker save -o image.tar app:${{ github.event.inputs.git_tag }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.git_tag }}  # 关联已有tag
+          name: ${{ github.event.inputs.release_title }}
+          files: image.tar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
