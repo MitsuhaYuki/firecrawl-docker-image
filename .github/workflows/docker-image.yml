@@ -33,5 +33,7 @@ jobs:
         with:
           tag_name: ${{ github.event.inputs.git_tag }}
           name: ${{ github.event.inputs.git_tag }}
-          files: image.tar
+          files: |
+            image.tar
+            ./image.tar
           fail_on_unmatched_files: true
