@@ -25,6 +25,9 @@ jobs:
       - name: Save image to local file
         run: docker save -o image.tar app:${{ github.event.inputs.git_tag }}
 
+      - name: DEBUG-List current files
+        run: ls -la
+
       - name: Upload image to release
         uses: softprops/action-gh-release@v2.2.1
         with:
