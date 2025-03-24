@@ -1,5 +1,4 @@
-name: Docker Image CI
-
+name: Build api image
 on:
   workflow_dispatch:
     inputs:
@@ -27,11 +26,8 @@ jobs:
         run: docker save -o image.tar app:${{ github.event.inputs.git_tag }}
 
       - name: Upload image to release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2.2.1
         with:
           tag_name: ${{ github.event.inputs.git_tag }}
           name: ${{ github.event.inputs.git_tag }}
           files: image.tar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
