@@ -19,27 +19,27 @@ jobs:
         with:
           ref: ${{ github.event.inputs.git_tag }}
 
-      - name: Build
+      - name: Build docker image
         run: docker build . --tag app:${{ github.event.inputs.git_tag }}
 
-      - name: Save image to local file
+      - name: Export docker image
         run: docker save -o image.tar app:${{ github.event.inputs.git_tag }}
 
-      - name: DEBUG-List current files
+      - name: List current files
         run: chmod 0777 image.tar | ls -la
 
-      # - name: Upload build artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: docker-image-${{ github.event.inputs.git_tag }}
-      #     path: image.tar
-      #     retention-days: 7
-
-      - name: Upload image to release
-        uses: softprops/action-gh-release@v1
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: ${{ github.event.inputs.git_tag }}
-          name: ${{ github.event.inputs.git_tag }}
-          files: |
-            image.tar
-          fail_on_unmatched_files: true
+          name: docker-image-${{ github.event.inputs.git_tag }}
+          path: image.tar
+          retention-days: 7
+
+      # - name: Upload image to release / WARNING: this is always failed with no reason, temporary disabled.
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     tag_name: ${{ github.event.inputs.git_tag }}
+      #     name: ${{ github.event.inputs.git_tag }}
+      #     files: |
+      #       image.tar
+      #     fail_on_unmatched_files: true
