@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: './app/api'
+        working-directory: '/app/api'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
