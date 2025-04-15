@@ -1,0 +1,58 @@
+name: Build all image
+on:
+  workflow_dispatch:
+    inputs:
+      git_tag:
+        description: 'Existing Git tag to build from'
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: './apps'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.git_tag }}
+
+      - name: Build api docker image
+        run: docker build ./api --tag api:${{ github.event.inputs.git_tag }}
+
+      - name: Export api docker image
+        run: docker save -o api-image.tar api:${{ github.event.inputs.git_tag }}
+      
+      - name: Build playwright docker image
+        run: docker build ./playwright-service-ts --tag playwright:${{ github.event.inputs.git_tag }}
+
+      - name: Export playwright docker image
+        run: docker save -o playwright-image.tar playwright:${{ github.event.inputs.git_tag }}
+
+      - name: List current files
+        run: chmod 0777 api-image.tar | chmod 0777 playwright-image.tar | ls -la
+
+      - name: Install zip
+        uses: montudor/action-zip@v1
+      
+      - name: Zip image files
+        run: zip -9 -j docker-images.zip *.tar
+        working-directory: ./apps
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image-${{ github.event.inputs.git_tag }}
+          path: ./apps/*.zip
+          retention-days: 1
+
+      - name: Upload image to release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.git_tag }}
+          name: ${{ github.event.inputs.git_tag }}
+          files: |
+            ./apps/*.zip
+          fail_on_unmatched_files: true
