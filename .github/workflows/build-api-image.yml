@@ -1,0 +1,45 @@
+name: Build api image
+on:
+  workflow_dispatch:
+    inputs:
+      git_tag:
+        description: 'Existing Git tag to build from'
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: './apps/api'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.git_tag }}
+
+      - name: Build docker image
+        run: docker build . --tag app:${{ github.event.inputs.git_tag }}
+
+      - name: Export docker image
+        run: docker save -o image.tar app:${{ github.event.inputs.git_tag }}
+
+      - name: List current files
+        run: chmod 0777 image.tar | ls -la
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image-${{ github.event.inputs.git_tag }}
+          path: ./apps/api/*.tar
+          retention-days: 7
+
+      - name: Upload image to release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.git_tag }}
+          name: ${{ github.event.inputs.git_tag }}
+          files: |
+            ./apps/api/*.tar
+          fail_on_unmatched_files: true
